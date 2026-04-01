@@ -27,33 +27,6 @@ jobs:
       - name: Install Claude Code
         run: npm install -g @anthropic-ai/claude-code
 
-      - name: Validate Claude token
-        env:
-          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
-        run: |
-          mkdir -p ~/.claude
-          echo '{"hasCompletedOnboarding":true}' > ~/.claude.json
-          output_file="$(mktemp)"
-          set +e
-          claude -p "auth-check" --model haiku --no-session-persistence >"$output_file" 2>&1
-          status=$?
-          set -e
-          cat "$output_file"
-
-          if [ $status -eq 0 ]; then
-            echo "Claude token validation succeeded."
-            exit 0
-          fi
-
-          if grep -Eiq "expired|unauthorized|invalid token|authentication|auth failed|login required|not logged in" "$output_file"; then
-            echo "Claude token appears invalid or expired."
-            echo "Run 'claude setup-token' locally and update the CLAUDE_OAUTH_TOKEN GitHub secret."
-            exit 1
-          fi
-
-          echo "Claude token validation failed with an unexpected error."
-          exit $status
-
       - name: Ping Claude to anchor 5-hour window
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
@@ -71,6 +44,12 @@ jobs:
             echo "Claude warmup request succeeded."
             echo "✓ Warmup complete"
             exit 0
+          fi
+
+          if grep -Eiq "expired|unauthorized|invalid token|authentication|auth failed|login required|not logged in" "$output_file"; then
+            echo "Claude token appears invalid or expired."
+            echo "Run 'claude setup-token' locally and update the CLAUDE_OAUTH_TOKEN GitHub secret."
+            exit 1
           fi
 
           if grep -qi "rate limit" "$output_file"; then

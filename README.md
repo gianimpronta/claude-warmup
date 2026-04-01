@@ -152,7 +152,7 @@ You're probably dispatching against the upstream repo instead of your fork. Run 
 Add the secret in your fork under `Settings > Secrets and variables > Actions`, then rerun the workflow.
 
 **`Claude token appears invalid or expired`**
-Run `claude setup-token` on a machine where you're logged into Claude Code, then update the `CLAUDE_OAUTH_TOKEN` secret in your fork and rerun the workflow.
+Run `claude setup-token` on a machine where you're logged into Claude Code, then update the `CLAUDE_OAUTH_TOKEN` secret in your fork and rerun the workflow. The warmup step checks for this directly.
 
 **Unexpected Claude CLI failure**
 Check the workflow logs. The job now prints the full Claude CLI output and only treats explicit rate-limit responses as expected.
