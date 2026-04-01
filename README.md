@@ -66,15 +66,17 @@ Paste when prompted.
 
 ### 4. Set your schedule
 
-Default is weekdays at 11:15 UTC.
+Default is weekdays at 06:15 UTC.
 
 GitHub Actions requires `on.schedule.cron` to be a literal value in the workflow file, so changing the schedule means editing `.github/workflows/warmup.yml` and updating this line:
 
 ```yml
-- cron: '15 11 * * 1-5'
+- cron: '15 06 * * 1-5'
 ```
 
 That's a standard cron expression in UTC. Common conversions:
+
+Need help generating one? Try [crontab.guru](https://crontab.guru/#15_9_*_*_1-5).
 
 | Timezone | 6:15 AM local in UTC | Cron |
 | --- | --- | --- |
@@ -101,6 +103,14 @@ gh repo set-default <your-user>/claude-warmup
 
 ```bash
 gh workflow run warmup.yml --repo <your-user>/claude-warmup
+```
+
+Check workflow status:
+
+```bash
+gh workflow list --repo <your-user>/claude-warmup
+gh run list --workflow warmup.yml --repo <your-user>/claude-warmup
+gh run view --log --repo <your-user>/claude-warmup
 ```
 
 Check the logs. You should see a Haiku response or a rate-limit message. Both mean it worked.
@@ -140,6 +150,9 @@ You're probably dispatching against the upstream repo instead of your fork. Run 
 
 **`CLAUDE_OAUTH_TOKEN secret is not set`**
 Add the secret in your fork under `Settings > Secrets and variables > Actions`, then rerun the workflow.
+
+**`Claude token appears invalid or expired`**
+Run `claude setup-token` on a machine where you're logged into Claude Code, then update the `CLAUDE_OAUTH_TOKEN` secret in your fork and rerun the workflow.
 
 **Unexpected Claude CLI failure**
 Check the workflow logs. The job now prints the full Claude CLI output and only treats explicit rate-limit responses as expected.
