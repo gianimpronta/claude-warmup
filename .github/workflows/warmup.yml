@@ -24,6 +24,9 @@ jobs:
             exit 1
           fi
 
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
       - name: Validate Claude token
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
@@ -50,9 +53,6 @@ jobs:
 
           echo "Claude token validation failed with an unexpected error."
           exit $status
-
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
 
       - name: Ping Claude to anchor 5-hour window
         env:
